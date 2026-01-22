@@ -46,8 +46,8 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "argoroll.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "argoroll.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+app: {{ include "argoroll.name" . }}
+release: {{ .Release.Name }}
 {{- end }}
 
 {{/*
