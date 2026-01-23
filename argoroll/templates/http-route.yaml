@@ -1,0 +1,37 @@
+{{- if .Values.httpRoute.enabled }}
+---
+# Production HTTPRoute
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "argoroll.fullname" . }}-production
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "argoroll.labels" . | nindent 4 }}
+    route-type: production
+  {{- with .Values.httpRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+  - name: {{ .Values.gateway.name | default (include "argoroll.fullname" .) }}
+    namespace: {{ .Release.Namespace }}
+  {{- with .Values.httpRoute.production.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+  {{- range .Values.httpRoute.production.rules }}
+  - matches:
+    {{- toYaml .matches | nindent 4 }}
+    backendRefs:
+    {{- range .backendRefs }}
+    - name: {{ include "argoroll.fullname" $ }}
+      port: {{ .port }}
+      {{- if .weight }}
+      weight: {{ .weight }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}

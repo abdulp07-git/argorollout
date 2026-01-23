@@ -19,7 +19,7 @@ spec:
       activeService: {{ include "argoroll.fullname" . }}
       previewService: {{ include "argoroll.fullname" . }}-preview
       autoPromotionEnabled: false    # ← Manual promotion (safer)
-      scaleDownDelaySeconds: 30      # ← Time before scaling down old version
+      scaleDownDelaySeconds: 5      # ← Time before scaling down old version
       previewReplicaCount: 1
   template:
     metadata:
