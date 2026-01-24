@@ -15,7 +15,7 @@ metadata:
   {{- end }}
 spec:
   parentRefs:
-  - name: {{ .Values.gateway.name | default (include "bluegreen.fullname" .) }}
+  - name: my-gateway
     namespace: {{ .Release.Namespace }}
   {{- with .Values.httpRoute.production.hostnames }}
   hostnames:
@@ -50,7 +50,7 @@ metadata:
   {{- end }}
 spec:
   parentRefs:
-  - name: {{ .Values.gateway.name | default (include "bluegreen.fullname" .) }}
+  - name: my-gateway
     namespace: {{ .Release.Namespace }}
   {{- with .Values.httpRoute.preview.hostnames }}
   hostnames:
