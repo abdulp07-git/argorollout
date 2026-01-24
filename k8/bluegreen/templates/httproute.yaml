@@ -1,0 +1,72 @@
+{{- if .Values.httpRoute.enabled }}
+---
+# Production HTTPRoute
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ template "bluegreen.fullname" . }}-production
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "bluegreen.labels" . | nindent 4 }}
+    route-type: production
+  {{- with .Values.httpRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+  - name: {{ .Values.gateway.name | default (include "bluegreen.fullname" .) }}
+    namespace: {{ .Release.Namespace }}
+  {{- with .Values.httpRoute.production.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+  {{- range .Values.httpRoute.production.rules }}
+  - matches:
+    {{- toYaml .matches | nindent 4 }}
+    backendRefs:
+    {{- range .backendRefs }}
+    - name: {{ include "bluegreen.fullname" $ }}
+      port: {{ .port }}
+      {{- if .weight }}
+      weight: {{ .weight }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+---
+# Preview HTTPRoute
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ template "bluegreen.fullname" . }}-preview
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "bluegreen.labels" . | nindent 4 }}
+    route-type: preview
+  {{- with .Values.httpRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  parentRefs:
+  - name: {{ .Values.gateway.name | default (include "bluegreen.fullname" .) }}
+    namespace: {{ .Release.Namespace }}
+  {{- with .Values.httpRoute.preview.hostnames }}
+  hostnames:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  rules:
+  {{- range .Values.httpRoute.preview.rules }}
+  - matches:
+    {{- toYaml .matches | nindent 4 }}
+    backendRefs:
+    {{- range .backendRefs }}
+    - name: {{ include "bluegreen.fullname" $ }}-preview
+      port: {{ .port }}
+      {{- if .weight }}
+      weight: {{ .weight }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
