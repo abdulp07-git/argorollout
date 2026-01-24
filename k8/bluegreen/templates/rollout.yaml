@@ -17,8 +17,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "bluegreen.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "bluegreen.labels" . | nindent 4 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
