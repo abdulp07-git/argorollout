@@ -3,17 +3,13 @@ kind: Rollout
 metadata:
   name: {{ template "bluegreen.fullname" . }}
   labels:
-    app: {{ template "bluegreen.name" . }}
-    chart: {{ template "bluegreen.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "bluegreen.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: {{ template "bluegreen.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "bluegreen.labels" . | nindent 4 }}
   strategy:
     blueGreen:
       activeService: {{ template "bluegreen.fullname" . }}
