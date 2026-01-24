@@ -9,7 +9,7 @@ spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      {{- include "bluegreen.labels" . | nindent 4 }}
+      {{- include "bluegreen.labels" . | nindent 6 }}
   strategy:
     blueGreen:
       activeService: {{ template "bluegreen.fullname" . }}
