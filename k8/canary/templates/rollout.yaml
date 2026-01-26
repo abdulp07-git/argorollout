@@ -1,31 +1,35 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: {{ include "argoroll.fullname" . }}
+  name: {{ template "canary.fullname" . }}
   labels:
-    app: {{ include "argoroll.name" . }}
-    chart: {{ include "argoroll.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    {{- include "canary.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: {{ include "argoroll.name" . }}
-      release: {{ .Release.Name }}
+      {{- include "canary.labels" . | nindent 6 }}
   strategy:
-    blueGreen:
-      activeService: {{ include "argoroll.fullname" . }}
-      previewService: {{ include "argoroll.fullname" . }}-preview
-      autoPromotionEnabled: false    # ← Manual promotion (safer)
-      scaleDownDelaySeconds: 5      # ← Time before scaling down old version
-      previewReplicaCount: 1
+    canary:
+      stableService: {{ template "canary.fullname" . }}-stable
+      canaryService: {{ template "canary.fullname" . }}-canary
+      trafficRouting:
+        plugins:
+          argoproj-labs/gatewayAPI:
+            httpRoute: canary-production
+            namespace: default
+      steps:
+      - setWeight: 25
+      - pause: {}              # Manual promotion
+      - setWeight: 50
+      - pause: {duration: 10m}
+      - setWeight: 75
+      - pause: {duration: 5m}
   template:
     metadata:
       labels:
-        app: {{ include "argoroll.name" . }}
-        release: {{ .Release.Name }}
+        {{- include "canary.labels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}

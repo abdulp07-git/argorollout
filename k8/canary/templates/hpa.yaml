@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "argoroll.fullname" . }}
+  name: {{ include "canary.fullname" . }}
   labels:
-    {{- include "argoroll.labels" . | nindent 4 }}
+    {{- include "canary.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "argoroll.fullname" . }}
+    name: {{ include "canary.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
