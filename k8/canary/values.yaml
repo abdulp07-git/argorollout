@@ -85,7 +85,7 @@ httpRoute:
   production:
     # Hostnames for production traffic
     hostnames:
-      - abc.com
+      - xyz.com
     rules:
       - matches:
           - path:
