@@ -21,11 +21,11 @@ spec:
             namespace: default
       steps:
       - setWeight: 25
-      - pause: {}              # Manual promotion
+      - pause: {duration: 10s}              # Manual promotion
       - setWeight: 50
-      - pause: {duration: 1m}
+      - pause: {duration: 10s}
       - setWeight: 75
-      - pause: {duration: 1m}
+      - pause: {duration: 10s}
   template:
     metadata:
       labels:
